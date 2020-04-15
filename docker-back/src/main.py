@@ -24,7 +24,7 @@ def main():
         if new_pos != 0:
             break
     whole_message = world_socket.recv(msg_len)
-    print(whole_message.SerializeToString())
+    print(whole.SerializeToString())
 
 
 if __name__ == "__main__":
