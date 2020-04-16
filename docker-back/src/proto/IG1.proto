@@ -12,17 +12,32 @@ message UMsg{
     	repeated UOrderPlaced uorderplaced = 1;         	 
     	repeated UTruckArrived utruckarrived = 2; // Truck arrived at the warehouse 	 
     	repeated UPkgDelivered upkgdelivered = 3; // Package delivered    	 
-    	repeated int64 ack = 4;                     	 
+    	optional UInitialWorld initworld = 4;
+        repeated int64 ack = 5;                  	 
 }
 
-message ASendTruck{
-    	required int32 whid = 1; //The warehouse ID	 
-    	required int32 x = 2;                                      	 
-    	required int32 y = 3;                                      	 
-    	required int64 pkgid = 4; // Package ID         	 
-    	repeated Product products = 5; // The products in a package    	 
-    	required int64 seq = 6; // Sequence number 	 
+message UInitialWorld{
+	required int64 worldid = 1;
+	required int64 seq = 2;
 }
+
+
+message ASendTruck{
+        required WarehouseInfo whinfo = 1;
+        required int32 x = 2;   // Buyer coordinate
+        required int32 y = 3;    // Buyer coordinate
+        required int64 pkgid = 4; // Package ID
+        repeated Product products = 5; // The products in a package
+        optional string upsid = 6;
+        required int64 seq = 7; // Sequence number
+}
+
+message WarehouseInfo{
+        required int32 whid = 1; //The warehouse ID
+        required int32 x = 2;      // x coordinate of wh
+        required int32 y = 3;      // y coordinate of wh
+}
+
 
 message Product{
     	required int64 id = 1; //Product ID                  	 
