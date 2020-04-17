@@ -1,0 +1,14 @@
+{% extends "upsapp/base.html" %}
+{% block content %}
+
+<h4>Tracking Number {{ object.package_id }}</h4>
+<ul class="list-group">
+    <li class="list-group-item"><strong>Owner:</strong> {{ object.owner }}</li>
+    <li class="list-group-item"><strong>Status:</strong> {{ object.status }}</li>
+    <li class="list-group-item"><strong>Product Name:</strong> {{ object.product_name }}</li>
+    <li class="list-group-item"><strong>Truck id:</strong> {{ object.truck_id }}</li>
+</ul>
+<br>
+<a class="btn btn-outline-success btn-sm" href="{{request.META.HTTP_REFERER|escape}}" role="button">Go Back</a>
+
+{% endblock content %}

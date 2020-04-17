@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import AbstractUser
 
 class ups_user(AbstractUser):
@@ -12,6 +13,8 @@ class ups_package(models.Model):
     status = models.CharField(max_length = 50)
     product_name = models.CharField(max_length = 50)
     truck_id = models.IntegerField()
+    def get_absolute_url(self):
+        return reverse('upsapp:detail', kwargs={'pk': self.pk})
 
 class ups_truck(models.Model):
     truck_id = models.IntegerField()

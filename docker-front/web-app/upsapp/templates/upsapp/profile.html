@@ -3,10 +3,31 @@
 {% block content %}
 <main role="main" class="container pt-3">
 
-<h3>Welcome back, {{ user.username }}</h3>
-<hr>
-<p>Your Email Address: {{ user.email }}</p>
-<div>
+<h3>Welcome, {{ user.username }}</h3>
+<br>
+<table class="table table-hover">
+    <thead>
+        <tr>
+        <th scope="col">Tracking Number</th>
+        <th scope="col">Product Name</th>
+        <th scope="col">Status</th>
+        <th scope="col">Detail</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for pkg in packages %}
+            <tr>
+                <td>{{ pkg.package_id }}</td>
+                <td>{{ pkg.product_name }}</td>
+                <td>{{ pkg.status }}</td>
+                <td>
+                    <a class="btn btn-outline-success btn-sm" href="{% url 'upsapp:detail' pkg.id %}" role="button">View Detail</a>
+                </td>
+            </tr>
+        {% endfor%}
+    </tbody>
+</table>
+
 {% endblock content %}
 
 

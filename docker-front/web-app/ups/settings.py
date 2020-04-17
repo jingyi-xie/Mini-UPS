@@ -125,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_REDIRECT_URL = 'upsapp:profile'
+LOGIN_REDIRECT_URL = 'upsapp:home'
 LOGIN_URL = 'upsapp:login'
 
 
