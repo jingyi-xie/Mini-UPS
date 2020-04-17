@@ -1,0 +1,8 @@
+{% extends 'upsapp/base.html' %}
+
+{% block title %}Log Out{% endblock %}
+{% block content %}
+  <h4>Successfully Logged Out!</h4>
+  <hr>
+  <a href="{% url 'upsapp:login' %}">Log In Again</a>
+{% endblock %}

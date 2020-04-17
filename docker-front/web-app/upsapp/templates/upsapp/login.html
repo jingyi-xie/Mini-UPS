@@ -1,0 +1,14 @@
+{% extends 'upsapp/base.html' %}
+
+{% block title %}Login{% endblock %}
+{% block content %}
+  <h4>Login</h4>
+  <br>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-outline-primary btn-sm" type="submit">Log In</button>
+  </form>
+  <hr>
+  No Account?  <a href="{% url 'upsapp:signup' %}"> Sign Up</a>
+{% endblock %}

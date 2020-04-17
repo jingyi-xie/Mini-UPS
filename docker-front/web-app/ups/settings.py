@@ -25,7 +25,7 @@ SECRET_KEY = '&@n(-vt7(#xf^**!7!xvko-08)5l@l!3c9t@w3=va^av-knbrn'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['web', 'vcm-14615.vm.duke.edu']
+ALLOWED_HOSTS = ['web', 'vcm-14615.vm.duke.edu', 'vcm-14348.vm.duke.edu']
 
 
 # Application definition
@@ -55,7 +55,7 @@ ROOT_URLCONF = 'ups.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -124,6 +124,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+LOGIN_REDIRECT_URL = 'upsapp:profile'
+LOGIN_URL = 'upsapp:login'
 
 
 AUTH_USER_MODEL = "upsapp.ups_user"

@@ -6,6 +6,6 @@ from .models import ups_user
 class UserSignupForm(UserCreationForm):
     email = forms.EmailField()
     class Meta:
-        model = app_user
+        model = ups_user
         fields = ['username', 'email', 'password1', 'password2']
 

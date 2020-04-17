@@ -1,0 +1,73 @@
+{% extends 'upsapp/base.html' %}
+
+{% block title %}Welcome to UPS!{% endblock %}
+
+
+{% block content %}
+<br>
+<h2>Tracking</h2>
+<hr>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-3">
+            
+            <form method="get">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Tracking Number</span>
+                    <input type="text" class="form-control" name="pkgnum" id="pkg_id" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                <button class="btn btn-outline-secondary" type="submit">Track</button>
+                </div>
+            </form>
+            <br>
+            <br>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                    <th scope="col">Tracking Number</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pkg in queryset %}
+                        <tr>
+                            <td>{{ pkg.package_id }}</td>
+                            <td>{{ pkg.status }}</td>
+                            <td>
+                                <a class="btn btn-outline-success btn-sm" href="#" role="button">View Detail</a>
+                            </td>
+                        </tr>
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+  <div class="col">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-8">
+                    <p class="card-text">
+                    <strong>Introducing UPS Account.</strong>
+                    <br>
+                    Track all your shipments like a pro
+                    <br>
+                    </p>
+                </div>
+                <div class="col-sm-4">
+                    <a href="{% url 'upsapp:signup'%}" class="btn btn-outline-success">Sign Up Now!</a>
+                </div>
+            </div>
+            <hr>
+            Already Have an Account? <a href={% url 'upsapp:login'%}> Log In </a>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<script type="text/javascript">
+    documennt.getElementById("id_q").value = "{{query}}"
+</script>
