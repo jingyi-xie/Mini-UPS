@@ -44,18 +44,22 @@ def insertOrderPlaced(umsg, pkgid, truckid, seq):
     orderPlaced.pkgid = pkgid
     orderPlaced.truckid = truckid
     orderPlaced.seq = seq
+    return umsg
 
 def insertTruckArrived(umsg, truckid, seq):
     truckArrived = umsg.utruckarrived.add()
     truckArrived.truckid = truckid
     truckArrived.seq = seq
+    return umsg
 
 def insertPkgDelivered(umsg, pkgid, seq):
     pkgDelivered = umsg.upkgdelivered.add()
     pkgDelivered.pkgid = pkgid
     pkgDelivered.seq = seq
+    return umsg
 
 def insertInitialWorld(umsg, worldid, seq):
     initWorld = umsg.initworld.add()
     initWorld.worldid = worldid
     initWorld.seq = seq
+    return umsg
