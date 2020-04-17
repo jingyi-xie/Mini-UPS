@@ -1,5 +1,7 @@
 from proto import world_ups_pb2
+from proto import IG1_pb2
 
+# interaction with world
 def createInitialConnect(uconnect, truckNum):
     for i in range(0, truckNum):
         truck = uconnect.trucks.add()
@@ -32,3 +34,28 @@ def insertQuery(ucommands, truckid, seqnum):
     query.seqnum = seqnum
     return ucommands
 
+# interaction with amazon
+def createUmsg(umsg, ack):
+    umsg.ack.add(ack)
+    return umsg
+
+def insertOrderPlaced(umsg, pkgid, truckid, seq):
+    orderPlaced = umsg.uorderplaced.add()
+    orderPlaced.pkgid = pkgid
+    orderPlaced.truckid = truckid
+    orderPlaced.seq = seq
+
+def insertTruckArrived(umsg, truckid, seq):
+    truckArrived = umsg.utruckarrived.add()
+    truckArrived.truckid = truckid
+    truckArrived.seq = seq
+
+def insertPkgDelivered(umsg, pkgid, seq):
+    pkgDelivered = umsg.upkgdelivered.add()
+    pkgDelivered.pkgid = pkgid
+    pkgDelivered.seq = seq
+
+def insertInitialWorld(umsg, worldid, seq):
+    initWorld = umsg.initworld.add()
+    initWorld.worldid = worldid
+    initWorld.seq = seq
