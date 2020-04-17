@@ -24,17 +24,43 @@ def main():
     WORLD_HOST = '127.0.0.1' 
     WORLD_PORT = 12345
     TRUCK_NUM = 2000
+
+    WORLD_ID = 0
+    WORLD_SEQ = 1
+
     world_s = socket.socket()
     world_s.connect((WORLD_HOST, WORLD_PORT))
     connectCommand = world_ups_pb2.UConnect()
-    ENCODED_MESSAGE = createInitialConnect(connectCommand, TRUCK_NUM)
+    connectCommand = createInitialConnect(connectCommand, TRUCK_NUM)
 
-    sender(world_s, ENCODED_MESSAGE)
+    sender(world_s, connectCommand)
     whole_message = receiver(world_s)
 
     connectResult = world_ups_pb2.UConnected()
     connectResult.ParseFromString(whole_message)
+    WORLD_ID = connectResult.worldid
     print(connectResult)
+
+    # accept connection from Amazon
+    AMZ_PORT = 33333
+    amz_s = socket.socket()
+    amz_s.bind(('', AMZ_PORT))
+    amz_s.listen(5) 
+    amz_conn, addr = amz_s.accept()
+    worldIdMsg = IG1.pb2.UMsg()
+    worldIdMsg = insertInitialWorld(worldIdMsg, WORLD_ID, WORLD_SEQ)
+    WORLD_SEQ += 1
+    sender(amz_conn, worldIdMsg)
+
+    sendIDResult = IG1.pb2.AMsg()
+    ack_message = receiver(world_s)
+    sendIDResult.ParseFromString(ack_message)
+    ack = sendIDResult.ack
+    print(ack)
+
+
+
+
 
 
 if __name__ == "__main__":
