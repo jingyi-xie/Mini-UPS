@@ -12,17 +12,18 @@ def connectDB():
         host="rajje.db.elephantsql.com",
         port="5432"
     )
-    csr = con.cursor()
-    return con, csr
+    return con
 
-def clearDB(csr):
+def clearDB(con):
+    csr = con.cursor()
     sql = "TRUNCATE upsapp_ups_package, upsapp_ups_truck"
     csr.execute(sql)
     # sql = "TRUNCATE upsapp_ups_user"
     # csr.execute(sql)
-
-def disconnectDB(con, csr):
+    con.commit()
     csr.close()
+
+def disconnectDB(con):
     con.close()
 
 # package operations
@@ -59,8 +60,9 @@ def getTruck(csr, truck_id):
     sql = "SELECT status from upsapp_ups_truck WHERE truck_id = (%d)"
     csr.execute(sql % truck_id)
 
-# test:
-# con, csr = connectDB()
+# # test:
+# con= connectDB()
+# csr = con.cursor()
 
 # insertPackage(csr, 200, 0, 0, 'owner', 'status', 'product_name', 500)
 # updatePackage(csr, 200, 'updated status')
@@ -71,4 +73,5 @@ def getTruck(csr, truck_id):
 # for i in entries:
 #     print(i)
 
-# disconnectDB(con, csr)
+# csr.close()
+# disconnectDB(con)
