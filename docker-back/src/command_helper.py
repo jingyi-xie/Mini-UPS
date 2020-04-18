@@ -35,7 +35,10 @@ def insertQuery(ucommands, truckid, seqnum):
     return ucommands
 
 # interaction with amazon
-def createUmsg(umsg, ack):
+def createUmsg()
+    return IG1.pb2.UMsg()
+    
+def insertAck(umsg, ack):
     umsg.ack.add(ack)
     return umsg
 
