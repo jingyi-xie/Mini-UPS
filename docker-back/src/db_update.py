@@ -10,3 +10,7 @@ conn = psycopg2.connect(
     host="rajje.db.elephantsql.com",
     port="5432"
 )
+
+# csr = conn.cursor()
+# for item in csr:
+#     print(item)
