@@ -1,67 +1,30 @@
-import socket
 from proto import *
 from command_helper import *
-from google.protobuf.internal.decoder import _DecodeVarint32
-from google.protobuf.internal.encoder import _EncodeVarint
+from socket_helper import *
+from world_helper import *
+from amazon_helper import *
 
-def sender(socket, msg):
-    serialized = msg.SerializeToString()
-    _EncodeVarint(socket.send, len(serialized), None)
-    socket.send(serialized)
-
-def receiver(socket):
-    var_int_buff = []
-    while True:
-        buf = socket.recv(1)
-        var_int_buff += buf
-        msg_len, new_pos = _DecodeVarint32(var_int_buff, 0)
-        if new_pos != 0:
-            break
-    whole_message = socket.recv(msg_len)
-    return whole_message
+TRUCK_NUM = 2000
+WORLD_ID = 0
+WORLD_SEQ = 0
+AMZ_SEQ = 0
 
 def main():
-    WORLD_HOST = '127.0.0.1' 
-    WORLD_PORT = 12345
-    TRUCK_NUM = 2000
+    #Connect the world
+    world_socket, WORLD_ID = connectWorld(TRUCK_NUM)
 
-    WORLD_ID = 0
-    WORLD_SEQ = 1
+    #Accept connection from the amazon
+    amz_socket = createAmzSocket()
+    
+    #Send worldid to Amazon
+    sendWorldID(amz_socket, WORLD_ID, AMZ_SEQ)
+    AMZ_SEQ += 1
 
-    world_s = socket.socket()
-    world_s.connect((WORLD_HOST, WORLD_PORT))
-    connectCommand = world_ups_pb2.UConnect()
-    connectCommand = createInitialConnect(connectCommand, TRUCK_NUM)
+    #TODO: Select and handle the commands from world/amazon
 
-    sender(world_s, connectCommand)
-    whole_message = receiver(world_s)
-
-    connectResult = world_ups_pb2.UConnected()
-    connectResult.ParseFromString(whole_message)
-    WORLD_ID = connectResult.worldid
-    print(connectResult)
-
-    # accept connection from Amazon
-    AMZ_PORT = 33333
-    amz_s = socket.socket()
-    amz_s.bind(('', AMZ_PORT))
-    amz_s.listen(5) 
-    amz_conn, addr = amz_s.accept()
-    worldIdMsg = IG1.pb2.UMsg()
-    worldIdMsg = insertInitialWorld(worldIdMsg, WORLD_ID, WORLD_SEQ)
-    WORLD_SEQ += 1
-    sender(amz_conn, worldIdMsg)
-
-    sendIDResult = IG1.pb2.AMsg()
-    ack_message = receiver(world_s)
-    sendIDResult.ParseFromString(ack_message)
-    ack = sendIDResult.ack
-    print(ack)
-
-
-
-
-
-
+    #Close the sockets
+    world_socket.close()
+    amz_socket.close()
+    
 if __name__ == "__main__":
     main()
