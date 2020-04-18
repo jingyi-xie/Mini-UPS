@@ -20,7 +20,6 @@ def clearDB(con):
     csr.execute(sql)
     # sql = "TRUNCATE upsapp_ups_user"
     # csr.execute(sql)
-    con.commit()
     csr.close()
 
 def disconnectDB(con):
@@ -60,18 +59,28 @@ def getTruck(csr, truck_id):
     sql = "SELECT status from upsapp_ups_truck WHERE truck_id = (%d)"
     csr.execute(sql % truck_id)
 
-# # test:
-# con= connectDB()
-# csr = con.cursor()
+# test:
+con= connectDB()
+# insert pkg
+csr = con.cursor()
+insertPackage(csr, 200, 0, 0, 'owner', 'status', 'product_name', 500)
+updatePackage(csr, 200, 'updated status')
+csr.execute('SELECT * FROM upsapp_ups_package')
+entries = csr.fetchall()
 
-# insertPackage(csr, 200, 0, 0, 'owner', 'status', 'product_name', 500)
-# updatePackage(csr, 200, 'updated status')
-# csr.execute('SELECT * FROM upsapp_ups_package')
+for i in entries:
+    print(i)
 
-# entries = csr.fetchall()
+csr.close()
+# clear
+clearDB(con)
+csr = con.cursor()
+csr.execute('SELECT * FROM upsapp_ups_package')
+entries = csr.fetchall()
 
-# for i in entries:
-#     print(i)
+for i in entries:
+    print(i)
 
-# csr.close()
-# disconnectDB(con)
+csr.close()
+# disconnect
+disconnectDB(con)
