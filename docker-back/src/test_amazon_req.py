@@ -2,19 +2,46 @@ from db_update import *
 from world_helper import *
 from proto import IG1_pb2
 
-def findIdleTruck():
-    return 10
+
+def findIdleTruck(csr):
+    csr.execute('SELECT truck_id FROM upsapp_ups_truck WHERE status = \'idle\'')
+    return csr.fetchone()[0]
 
 
-def process_amsg(con, msg):
+def processAmsg(con, msg):
+    csr = con.cursor()
     for item in msg.asendtruck:
-        csr = con.cursor()
-        truck_id = findIdleTruck()
-        db_updateTruck(csr, truck_id, 'warehouse')
-        csr.close()
+        # update truck
+        truck_id = findIdleTruck(csr)
+        db_updateTruck(csr, truck_id, 'loading')
+
         # TODO: world send truck
 
-# # test
+        # insert pkg
+        package_id = item.pkgid
+        x = item.x
+        y = item.y
+        owner = ''
+        if item.upsid:
+            owner = item.upsid
+        status = 'loading'
+        product_name = getProductName(item.products)
+        db_insertPackage(csr, package_id, x, y, owner,
+                         status, product_name, truck_id)
+
+    for item in msg.afinishloading:
+        db_updateTruck(csr, item.truckid, 'shipping')
+        db_updatePackage(csr, item.pkgid, 'shipping')
+    csr.close()
+    con.commit()
+
+def getProductName(products):
+    names = ''
+    for item in products:
+        names += item.description + ', '
+    return names
+
+# # TEST ========== processAmsg
 # msg = IG1_pb2.AMsg()
 # sendTruck = msg.asendtruck.add()
 # wh_info = sendTruck.whinfo
@@ -35,7 +62,15 @@ def process_amsg(con, msg):
 # con = connectDB()
 # clearDB(con)
 
-# initTrucks(100)
-# process_amsg(con, msg)
+# initTrucks(10)
+# processAmsg(con, msg)
 
 # con.commit()
+
+
+# # TEST ========== findIdleTruck
+# con = connectDB()
+# csr = con.cursor()
+# print(findIdleTruck(csr))
+# csr.close()
+# con.close()
