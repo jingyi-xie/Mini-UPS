@@ -13,7 +13,7 @@ AMZ_SEQ = 0
 def main():
     #Connect the world
     world_socket, WORLD_ID = connectWorld(TRUCK_NUM)
-
+    print('Successfully connected to world with id ' + str(WORLD_ID))
     #Accept connection from the amazon
     amz_socket = createAmzSocket()
     
@@ -21,21 +21,26 @@ def main():
     sendWorldID(amz_socket, WORLD_ID, AMZ_SEQ)
     AMZ_SEQ += 1
 
-    #Select and handle the commands from world/amazon
+    #Select and read the messages from world/amazon
     while True:
         socket_list = [world_socket, amz_socket]
         read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [])
-        for s in read_sockets:
-            if s == world_socket:
+        for rs in read_sockets:
+            if not read_sockets:
+                print("Timed out, retry...")
+                continue
+            if rs == world_socket:
                 world_response = world_ups_pb2.UResponses()
                 message = receiver(world_socket)
                 world_response.ParseFromString(message)
-                handle_UResponse(world_response, world_socket, amz_socket)
-            elif s == amz_socket:
+                process_wTask(world_response, world_socket, amz_socket)
+            elif rs == amz_socket:
                 amz_msg = IG1_pb2.AMsg()
                 message = receiver(amz_socket)
                 amz_msg.ParseFromString(message)
-                handle_AMsg(amz_msg, world_socket, amz_socket)
+                process_aTask(amz_msg, world_socket, amz_socket)
+        for es in error_sockets:
+            print('Error from ', es.getpeername())
 
     #Close the sockets
     world_socket.close()
