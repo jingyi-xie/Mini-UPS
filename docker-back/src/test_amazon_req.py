@@ -1,5 +1,5 @@
-from db_update import *
-from world_helper import *
+from db_update import db_updateTruck, db_insertPackage, db_updatePackage
+from world_helper import initTrucks
 from proto import IG1_pb2
 
 
