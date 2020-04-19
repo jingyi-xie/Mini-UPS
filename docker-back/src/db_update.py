@@ -2,8 +2,6 @@ import os
 import urllib.parse as up
 import psycopg2
 
-# TODO: modify csr, conn for multithreading
-
 def connectDB():
     con = psycopg2.connect(
         database="cobajydu",

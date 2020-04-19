@@ -7,7 +7,7 @@ def findIdleTruck(csr):
     csr.execute('SELECT truck_id FROM upsapp_ups_truck WHERE status = \'idle\'')
     return csr.fetchone()[0]
 
-
+# TODO: send/recv operations
 def processAmsg(con, msg):
     csr = con.cursor()
     for item in msg.asendtruck:
@@ -32,6 +32,7 @@ def processAmsg(con, msg):
     for item in msg.afinishloading:
         db_updateTruck(csr, item.truckid, 'shipping')
         db_updatePackage(csr, item.pkgid, 'shipping')
+        
     csr.close()
     con.commit()
 
@@ -74,3 +75,17 @@ def getProductName(products):
 # print(findIdleTruck(csr))
 # csr.close()
 # con.close()
+
+# TODO: send/recv operations
+def processWmsg(con, msg):
+    csr = con.cursor()
+
+    for item in msg.completions:
+        db_updateTruck(csr, item.truckid, item.status)
+    for item in msg.delivered:
+        db_updatePackage(csr, item.pkgid, 'delivered')
+    for item in msg.truckstatus:
+        db_updateTruck(csr, item.truck_id, item.status)
+
+    csr.close()
+    con.commit()
