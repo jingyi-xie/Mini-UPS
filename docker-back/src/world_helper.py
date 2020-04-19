@@ -33,3 +33,17 @@ def initTrucks(truck_num):
     csr.close()
     con.commit()
     con.close()
+
+# TODO: send/recv operations
+def processWmsg(con, msg):
+    csr = con.cursor()
+
+    for item in msg.completions:
+        db_updateTruck(csr, item.truckid, item.status)
+    for item in msg.delivered:
+        db_updatePackage(csr, item.packageid, 'delivered')
+    for item in msg.truckstatus:
+        db_updateTruck(csr, item.truck_id, item.status)
+
+    csr.close()
+    con.commit()
