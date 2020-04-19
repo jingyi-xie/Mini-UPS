@@ -13,7 +13,7 @@ AMZ_SEQ = 0
 def main():
     #Connect the world
     world_socket, WORLD_ID = connectWorld(TRUCK_NUM)
-
+    print('Successfully connected to world with id ' + str(WORLD_ID))
     #Accept connection from the amazon
     amz_socket = createAmzSocket()
     
