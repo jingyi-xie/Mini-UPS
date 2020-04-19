@@ -1,3 +1,4 @@
+import select
 from proto import *
 from command_helper import *
 from socket_helper import *
@@ -20,7 +21,21 @@ def main():
     sendWorldID(amz_socket, WORLD_ID, AMZ_SEQ)
     AMZ_SEQ += 1
 
-    #TODO: Select and handle the commands from world/amazon
+    #Select and handle the commands from world/amazon
+    while True:
+        socket_list = [world_socket, amz_socket]
+        read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [])
+        for s in read_sockets:
+            if s == world_socket:
+                world_response = world_ups_pb2.UResponses()
+                message = receiver(world_socket)
+                world_response.ParseFromString(message)
+                handle_UResponse(world_response, world_socket, amz_socket)
+            elif s == amz_socket:
+                amz_msg = IG1_pb2.AMsg()
+                message = receiver(amz_socket)
+                amz_msg.ParseFromString(message)
+                handle_AMsg(amz_msg, world_socket, amz_socket)
 
     #Close the sockets
     world_socket.close()
