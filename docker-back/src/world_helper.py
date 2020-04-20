@@ -34,13 +34,16 @@ def initTrucks(con, truck_num):
 # TODO: send/recv operations
 def process_wTask(con, msg, world_socket, amz_socket, seq):
     csr = con.cursor()
-
     for item in msg.completions:
         db_updateTruck(csr, item.truckid, item.status)
     for item in msg.delivered:
         db_updatePackage(csr, item.packageid, 'delivered')
+    for item in msg.finished:
+        print ''
+    for item in msg.
     for item in msg.truckstatus:
         db_updateTruck(csr, item.truck_id, item.status)
+    for item in msg.
 
     csr.close()
     con.commit()
