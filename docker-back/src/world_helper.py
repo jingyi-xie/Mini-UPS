@@ -23,8 +23,7 @@ def connectWorld(truck_num):
             break
     return world_s, wid
 
-def initTrucks(truck_num):
-    con = connectDB()
+def initTrucks(con, truck_num):
     csr = con.cursor()
     for i in range(truck_num):
         db_insertTruck(csr, i, 'idle')
@@ -33,7 +32,7 @@ def initTrucks(truck_num):
     con.close()
 
 # TODO: send/recv operations
-def processWmsg(con, msg):
+def process_wTask(con, msg, world_socket, amz_socket):
     csr = con.cursor()
 
     for item in msg.completions:

@@ -4,6 +4,7 @@ from command_helper import *
 from socket_helper import *
 from world_helper import *
 from amazon_helper import *
+from db_update import *
 
 TRUCK_NUM = 2000
 WORLD_ID = 0
@@ -25,9 +26,10 @@ def main():
     AMZ_SEQ += 1
 
     #clear database
-    clearDB(connectDB())
+    con = connectDB()
+    clearDB(con)
     #add trucks to database
-    initTrucks(TRUCK_NUM)
+    initTrucks(con, TRUCK_NUM)
 
     #Select and read the messages from world/amazon
     while True:
@@ -41,12 +43,12 @@ def main():
                 world_response = world_ups_pb2.UResponses()
                 message = receiver(world_socket)
                 world_response.ParseFromString(message)
-                process_wTask(world_response, world_socket, amz_socket)
+                process_wTask(con, world_response, world_socket, amz_socket)
             elif rs == amz_socket:
                 amz_msg = IG1_pb2.AMsg()
                 message = receiver(amz_socket)
                 amz_msg.ParseFromString(message)
-                process_aTask(amz_msg, world_socket, amz_socket)
+                process_aTask(con, amz_msg, world_socket, amz_socket)
         for es in error_sockets:
             print('Error from ', es.getpeername())
 
