@@ -1,4 +1,5 @@
 import select
+import threading
 from proto import *
 from command_helper import *
 from socket_helper import *
@@ -43,7 +44,11 @@ def main():
                 world_response = world_ups_pb2.UResponses()
                 message = receiver(world_socket)
                 world_response.ParseFromString(message)
-                process_wTask(con, world_response, world_socket, amz_socket)
+                world_t = threading.Thread(
+                    target = process_wTask,
+                    args = (con, world_response, world_socket, amz_socket, AMZ_SEQ))
+                AMZ_SEQ += len(world_response.completions) + len(world_response.delivered)
+                world_t.start()
             elif rs == amz_socket:
                 amz_msg = IG1_pb2.AMsg()
                 message = receiver(amz_socket)
