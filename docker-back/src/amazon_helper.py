@@ -111,37 +111,37 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
     sender(wSocket, world_msg)
     sender(aSocket, amazon_msg)
 
-# TEST ========== processAmsg
-msg = IG1_pb2.AMsg()
-# ASendTruck
-sendTruck = msg.asendtruck.add()
-wh_info = sendTruck.whinfo
-wh_info.whid = 1
-wh_info.x = 2
-wh_info.y = 3
-sendTruck.x = 5
-sendTruck.y = 10
-sendTruck.pkgid = 12
-product = sendTruck.products.add()
-product.id = 1
-product.description = 'test product'
-product.count = 5
-sendTruck.upsid = 'upsid'
-sendTruck.seq = 12345
-# AFinishLoading
-fl = msg.afinishloading.add()
-fl.pkgid = 12
-fl.truckid = 0
-fl.seq = 56789
+# # TEST ========== processAmsg
+# msg = IG1_pb2.AMsg()
+# # ASendTruck
+# sendTruck = msg.asendtruck.add()
+# wh_info = sendTruck.whinfo
+# wh_info.whid = 1
+# wh_info.x = 2
+# wh_info.y = 3
+# sendTruck.x = 5
+# sendTruck.y = 10
+# sendTruck.pkgid = 12
+# product = sendTruck.products.add()
+# product.id = 1
+# product.description = 'test product'
+# product.count = 5
+# sendTruck.upsid = 'upsid'
+# sendTruck.seq = 12345
+# # AFinishLoading
+# fl = msg.afinishloading.add()
+# fl.pkgid = 12
+# fl.truckid = 0
+# fl.seq = 56789
 
-con = connectDB()
-clearDB(con)
-initTrucks(con, 10)
-amsg, wmsg = processAmsg(con, msg, 0, 0)
+# con = connectDB()
+# clearDB(con)
+# initTrucks(con, 10)
+# amsg, wmsg = processAmsg(con, msg, 0, 0)
 
-disconnectDB(con)
-print("Amazon message ========== \n" + str(amsg))
-print("World message ========== \n" + str(wmsg))
+# disconnectDB(con)
+# print("Amazon message ========== \n" + str(amsg))
+# print("World message ========== \n" + str(wmsg))
 
 
 # # TEST ========== findIdleTruck
@@ -152,8 +152,8 @@ print("World message ========== \n" + str(wmsg))
 # con.close()
 
 # # TEST ========== findpkgXY
-con = connectDB()
-csr = con.cursor()
-print(findPkgX(csr, 12))
-csr.close()
-con.close()
+# con = connectDB()
+# csr = con.cursor()
+# print(findPkgX(csr, 12))
+# csr.close()
+# con.close()
