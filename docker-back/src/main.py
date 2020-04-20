@@ -4,7 +4,7 @@ import config
 from proto import IG1_pb2, world_ups_pb2, world_amazon_pb2
 from socket_helper import createAmzSocket, receiver
 from world_helper import connectWorld, initTrucks, process_wTask
-from amazon_helper import sendWorldID
+from amazon_helper import sendWorldID, process_aTask
 from db_update import connectDB, clearDB
 
 TRUCK_NUM = 2000
@@ -54,7 +54,12 @@ def main():
                 amz_msg = IG1_pb2.AMsg()
                 message = receiver(amz_socket)
                 amz_msg.ParseFromString(message)
-                process_aTask(con, amz_msg, world_socket, amz_socket)
+                amazon_t = threading.Thread(
+                    target = process_aTask,
+                    args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))
+                AMZ_SEQ += len(amz_msg.asendtruck) + len(amz_msg.afinishloading)
+                amazon_t.start()
+  
         for es in error_sockets:
             print('Error from ', es.getpeername())
 

@@ -32,7 +32,7 @@ def initTrucks(con, truck_num):
     con.close()
 
 # TODO: send/recv operations
-def process_wTask(con, msg, world_socket, amz_socket, seq):
+# def process_wTask(con, msg, world_socket, amz_socket, seq):
     # csr = con.cursor()
     # for item in msg.completions:
     #     db_updateTruck(csr, item.truckid, item.status)

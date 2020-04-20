@@ -1,6 +1,7 @@
 from proto import *
 from socket_helper import *
 from command_helper import *
+from world_helper import *
 from db_update import *
 
 def sendWorldID(amz_socket, worldID, seqNum):
@@ -23,19 +24,22 @@ def findIdleTruck(csr):
     csr.execute('SELECT truck_id FROM upsapp_ups_truck WHERE status = \'idle\'')
     return csr.fetchone()[0]
 
-# TODO: send/recv operations
+def findPkgXY(csr, pkgid):
+    csr.execute('SELECT x, y FROM upsapp_ups_package WHERE package_id = (%d)' % pkgid)
+    return csr.fetchone()
 
 
-def processAmsg(con, msg):
+def processAmsg(con, msg, ASEQ, WSEQ):
     csr = con.cursor()
+    world_msg = world_ups_pb2.UCommands()
+    amazon_msg = IG1_pb2.UMsg()
+
     for item in msg.asendtruck:
-        # update truck
+        # 1. update truck
         truck_id = findIdleTruck(csr)
         db_updateTruck(csr, truck_id, 'loading')
-
-        # TODO: world send truck
-
-        # insert pkg
+        
+        # 2. insert pkg
         package_id = item.pkgid
         x = item.x
         y = item.y
@@ -46,14 +50,51 @@ def processAmsg(con, msg):
         product_name = getProductName(item.products)
         db_insertPackage(csr, package_id, x, y, owner,
                          status, product_name, truck_id)
+        
+        # 3. world go pick up
+        pickup = world_msg.pickups.add()
+        pickup.truckid = truck_id
+        pickup.whid = item.whinfo.whid
+        WSEQ += 1
+        pickup.seqnum = WSEQ
+
+        # 4. reply amazon
+        # orderplaced
+        placed = amazon_msg.uorderplaced.add()
+        placed.pkgid = package_id
+        placed.truckid = truck_id
+        ASEQ += 1
+        placed.seq = ASEQ
+        # ack
+        amazon_msg.ack.append(item.seq)
+        
 
     for item in msg.afinishloading:
+        # 1. update truck and pkg
         db_updateTruck(csr, item.truckid, 'shipping')
         db_updatePackage(csr, item.pkgid, 'shipping')
 
-        # TODO: Ugodeliver
+        # 2. world go deliver
+        deliver = world_msg.deliveries.add()
+        deliver.truckid = item.truck_id
+        location = deliver.packages.add()
+        location.packageid = item.pkgid
+        location.x = findPkgXY(item.pkgid)[0]
+        location.y = findPkgXY(item.pkgid)[1]
+        WSEQ += 1
+        deliver.seqnum = WSEQ
+
+        # 3. reply amazon
+        amazon_msg.ack.append(item.seq)
+
+    #  # TODO
+    # for item in msg.ack:
+    #     # 1. compare with seq
+    #     # 2. resend message
+
     csr.close()
     con.commit()
+    return amazon_msg, world_msg
 
 
 def getProductName(products):
@@ -62,6 +103,13 @@ def getProductName(products):
         names += item.description + ', '
     return names
 
+
+def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
+    amazon_msg, world_msg = processAmsg(con, msg, ASEQ, WSEQ)
+    # send message to world and amazon
+    sender(wSocket, world_msg)
+    sender(aSocket, amazon_msg)
+
 # # TEST ========== processAmsg
 # msg = IG1_pb2.AMsg()
 # sendTruck = msg.asendtruck.add()
@@ -69,8 +117,8 @@ def getProductName(products):
 # wh_info.whid = 1
 # wh_info.x = 2
 # wh_info.y = 3
-# sendTruck.x = 0
-# sendTruck.y = 0
+# sendTruck.x = 10
+# sendTruck.y = 20
 # sendTruck.pkgid = 12
 # product = sendTruck.products.add()
 # product.id = 1
@@ -79,18 +127,25 @@ def getProductName(products):
 # sendTruck.upsid = 'upsid'
 # sendTruck.seq = 12345
 
-# # db
 # con = connectDB()
 # clearDB(con)
+# initTrucks(con, 10)
+# con = connectDB()
+# processAmsg(con, msg, 0, 0)
 
-# initTrucks(10)
-# processAmsg(con, msg)
-
-# con.commit()
 
 # # TEST ========== findIdleTruck
 # con = connectDB()
 # csr = con.cursor()
 # print(findIdleTruck(csr))
+# csr.close()
+# con.close()
+
+# # # TEST ========== findpkgXY
+# con = connectDB()
+# csr = con.cursor()
+# x = findPkgXY(csr, 12)
+# print(x[0])
+# print(x[1])
 # csr.close()
 # con.close()
