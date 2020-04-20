@@ -41,6 +41,7 @@ def db_updatePackage(csr, package_id, status):
 def db_getPackege(csr, package_id):
     sql = "SELECT status from upsapp_ups_package WHERE package_id = (%d)"
     csr.execute(sql % package_id)
+    return csr.fetchone()[0]
 
 
 # truck operations
@@ -57,6 +58,7 @@ def db_updateTruck(csr, truck_id, status):
 def db_getTruck(csr, truck_id):
     sql = "SELECT status from upsapp_ups_truck WHERE truck_id = (%d)"
     csr.execute(sql % truck_id)
+    return csr.fetchone()[0]
 
 # # test:
 # con= connectDB()

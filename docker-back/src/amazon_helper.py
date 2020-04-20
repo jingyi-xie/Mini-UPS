@@ -24,7 +24,7 @@ def findIdleTruck(csr):
     csr.execute('SELECT truck_id FROM upsapp_ups_truck WHERE status = \'idle\'')
     return csr.fetchone()[0]
 
-def findPkgXY(csr, pkgid):
+def findPkgX(csr, pkgid):
     csr.execute('SELECT x, y FROM upsapp_ups_package WHERE package_id = (%d)' % pkgid)
     return csr.fetchone()
 
@@ -76,11 +76,12 @@ def processAmsg(con, msg, ASEQ, WSEQ):
 
         # 2. world go deliver
         deliver = world_msg.deliveries.add()
-        deliver.truckid = item.truck_id
+        deliver.truckid = item.truckid
         location = deliver.packages.add()
         location.packageid = item.pkgid
-        location.x = findPkgXY(item.pkgid)[0]
-        location.y = findPkgXY(item.pkgid)[1]
+        xy = findPkgX(csr, item.pkgid)
+        location.x = xy[0]
+        location.y = xy[1]
         WSEQ += 1
         deliver.seqnum = WSEQ
 
@@ -110,28 +111,37 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
     sender(wSocket, world_msg)
     sender(aSocket, amazon_msg)
 
-# # TEST ========== processAmsg
-# msg = IG1_pb2.AMsg()
-# sendTruck = msg.asendtruck.add()
-# wh_info = sendTruck.whinfo
-# wh_info.whid = 1
-# wh_info.x = 2
-# wh_info.y = 3
-# sendTruck.x = 10
-# sendTruck.y = 20
-# sendTruck.pkgid = 12
-# product = sendTruck.products.add()
-# product.id = 1
-# product.description = 'description info'
-# product.count = 5
-# sendTruck.upsid = 'upsid'
-# sendTruck.seq = 12345
+# TEST ========== processAmsg
+msg = IG1_pb2.AMsg()
+# ASendTruck
+sendTruck = msg.asendtruck.add()
+wh_info = sendTruck.whinfo
+wh_info.whid = 1
+wh_info.x = 2
+wh_info.y = 3
+sendTruck.x = 5
+sendTruck.y = 10
+sendTruck.pkgid = 12
+product = sendTruck.products.add()
+product.id = 1
+product.description = 'test product'
+product.count = 5
+sendTruck.upsid = 'upsid'
+sendTruck.seq = 12345
+# AFinishLoading
+fl = msg.afinishloading.add()
+fl.pkgid = 12
+fl.truckid = 0
+fl.seq = 56789
 
-# con = connectDB()
-# clearDB(con)
-# initTrucks(con, 10)
-# con = connectDB()
-# processAmsg(con, msg, 0, 0)
+con = connectDB()
+clearDB(con)
+initTrucks(con, 10)
+amsg, wmsg = processAmsg(con, msg, 0, 0)
+
+disconnectDB(con)
+print("Amazon message ========== \n" + str(amsg))
+print("World message ========== \n" + str(wmsg))
 
 
 # # TEST ========== findIdleTruck
@@ -141,11 +151,9 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
 # csr.close()
 # con.close()
 
-# # # TEST ========== findpkgXY
-# con = connectDB()
-# csr = con.cursor()
-# x = findPkgXY(csr, 12)
-# print(x[0])
-# print(x[1])
-# csr.close()
-# con.close()
+# # TEST ========== findpkgXY
+con = connectDB()
+csr = con.cursor()
+print(findPkgX(csr, 12))
+csr.close()
+con.close()

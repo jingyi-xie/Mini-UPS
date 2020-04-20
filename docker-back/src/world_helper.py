@@ -29,7 +29,6 @@ def initTrucks(con, truck_num):
         db_insertTruck(csr, i, 'idle')
     csr.close()
     con.commit()
-    con.close()
 
 # TODO: send/recv operations
 # def process_wTask(con, msg, world_socket, amz_socket, seq):
