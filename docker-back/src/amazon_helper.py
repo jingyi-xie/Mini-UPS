@@ -16,7 +16,7 @@ def sendWorldID(amz_socket, worldID, seqNum):
     ack_message = receiver(amz_socket)
     sendIDResult.ParseFromString(ack_message)
     ack = sendIDResult.ack
-    print(ack)
+    print('Ack received after sending world id to amazon' + str(ack))
 
 
 def findIdleTruck(csr):

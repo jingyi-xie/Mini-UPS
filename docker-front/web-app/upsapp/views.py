@@ -37,12 +37,12 @@ class profile_view(LoginRequiredMixin, ListView):
     context_object_name = 'packages'
     template_name = 'upsapp/profile.html'
     def get_queryset(self):
-        return ups_package.objects.filter(owner = self.request.user.user_name)
+        return ups_package.objects.filter(owner = self.request.user.username)
 
 class pkg_detail_view(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = ups_package
     def test_func(self):
         package = self.get_object()
-        if self.request.user.user_name == package.owner:
+        if self.request.user.username == package.owner:
             return True
         return False

@@ -16,9 +16,11 @@ def main():
     print('Successfully connected to world with id ' + str(WORLD_ID))
     #Accept connection from the amazon
     amz_socket = createAmzSocket()
+    print('Created amazon socket')
     
     #Send worldid to Amazon
     sendWorldID(amz_socket, WORLD_ID, AMZ_SEQ)
+    print('Sent world id to amazon')
     AMZ_SEQ += 1
 
     #Select and read the messages from world/amazon
