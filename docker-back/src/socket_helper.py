@@ -13,7 +13,7 @@ def createWorldSocket():
 
 def createAmzSocket():
     amz_s = socket.socket()
-    amz_s.bind(('', AMZ_PORT))
+    amz_s.bind((socket.gethostbyname(socket.gethostname()), AMZ_PORT))
     amz_s.listen(5) 
     amz_conn, addr = amz_s.accept()
     return amz_conn

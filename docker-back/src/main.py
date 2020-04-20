@@ -7,10 +7,11 @@ from amazon_helper import *
 
 TRUCK_NUM = 2000
 WORLD_ID = 0
-WORLD_SEQ = 0
-AMZ_SEQ = 0
+WORLD_SEQ = 1
+AMZ_SEQ = 1
 
 def main():
+    global WORLD_SEQ, AMZ_SEQ, TRUCK_NUM, WORLD_ID
     #Connect the world
     world_socket, WORLD_ID = connectWorld(TRUCK_NUM)
     print('Successfully connected to world with id ' + str(WORLD_ID))
@@ -22,6 +23,11 @@ def main():
     sendWorldID(amz_socket, WORLD_ID, AMZ_SEQ)
     print('Sent world id to amazon')
     AMZ_SEQ += 1
+
+    #clear database
+    clearDB(connectDB())
+    #add trucks to database
+    initTrucks(TRUCK_NUM)
 
     #Select and read the messages from world/amazon
     while True:

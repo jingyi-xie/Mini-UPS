@@ -21,8 +21,6 @@ def connectWorld(truck_num):
         if connectResult.result == 'connected!':
             wid = connectResult.worldid
             break
-    #add trucks to database
-    initTrucks(truck_num)
     return world_s, wid
 
 def initTrucks(truck_num):

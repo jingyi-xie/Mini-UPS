@@ -62,7 +62,7 @@ def insertPkgDelivered(umsg, pkgid, seq):
     return umsg
 
 def insertInitialWorld(umsg, worldid, seq):
-    initWorld = umsg.initworld.add()
-    initWorld.worldid = worldid
-    initWorld.seq = seq
+    # initWorld = umsg.initworld
+    umsg.initworld.worldid = worldid
+    umsg.initworld.seq = seq
     return umsg
