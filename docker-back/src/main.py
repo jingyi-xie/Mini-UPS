@@ -57,7 +57,8 @@ def main():
                 amazon_t = threading.Thread(
                     target = process_aTask,
                     args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))
-                AMZ_SEQ += len(amz_msg.asendtruck) + len(amz_msg.afinishloading)
+                AMZ_SEQ += len(amz_msg.asendtruck)
+                WORLD_SEQ += len(amz_msg.asendtruck) + len(amz_msg.afinishloading)
                 amazon_t.start()
   
         for es in error_sockets:
