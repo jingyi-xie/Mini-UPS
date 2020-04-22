@@ -64,13 +64,13 @@ def processWmsg(con, msg, amz_seq):
         world_msg.acks.append(completion.seqnum)
 
         # 6. add seq# to list
-        config.WORLD_RECV_SEQS.append(completion.seqnum)
+        config.WORLD_RECV_SEQS.add(completion.seqnum)
 
     for delivered in msg.delivered:
         # 1. detect duplication 
         if delivered.seqnum in config.WORLD_RECV_SEQS:
             continue
-        
+
         print("package " + str(delivered.packageid) + " is delivered")
         
         # 2. change package status to delivered
@@ -86,7 +86,7 @@ def processWmsg(con, msg, amz_seq):
         world_msg.acks.append(delivered.seqnum)
         
         # 5. add seq# to list
-        config.WORLD_RECV_SEQS.append(delivered.seqnum)
+        config.WORLD_RECV_SEQS.add(delivered.seqnum)
     # for finished in msg.finished:
     
     for ack in msg.acks:
@@ -107,7 +107,7 @@ def processWmsg(con, msg, amz_seq):
         world_msg.acks.append(status.seqnum)
         
         # 4. add seq# to list
-        config.WORLD_RECV_SEQS.append(status.seqnum)
+        config.WORLD_RECV_SEQS.add(status.seqnum)
     
     for error in msg.error:
         # 1. detect duplication
@@ -119,7 +119,7 @@ def processWmsg(con, msg, amz_seq):
         world_msg.acks.append(error.seqnum)
         
         # 3. add seq# to list
-        config.WORLD_RECV_SEQS.append(error.seqnum)
+        config.WORLD_RECV_SEQS.add(error.seqnum)
     
     csr.close()
     con.commit()
