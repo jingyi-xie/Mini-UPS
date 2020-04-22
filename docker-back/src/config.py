@@ -5,5 +5,5 @@ def init():
     global WORLD_RECV_ACKS
     WORLD_RECV_ACKS = set()
 
-    global WORLD_MSG_MAP
-    WORLD_MSG_MAP = dict()
+    global SEQ_TO_WORLD
+    SEQ_TO_WORLD = set()

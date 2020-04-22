@@ -45,6 +45,10 @@ def main():
                 world_response = world_ups_pb2.UResponses()
                 message = receiver(world_socket)
                 world_response.ParseFromString(message)
+                print("RECV from world ==========\n" + world_response) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                if world_response.finished:
+                    print("WORLD_RECV_SEQS ==========\n" + WORLD_RECV_SEQS)
+                    print("SEQ_TO_WORLD ==========\n" + SEQ_TO_WORLD) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 world_t = threading.Thread(
                     target = process_wTask,
                     args = (con, world_response, world_socket, amz_socket, AMZ_SEQ))
@@ -54,6 +58,7 @@ def main():
                 amz_msg = IG1_pb2.AMsg()
                 message = receiver(amz_socket)
                 amz_msg.ParseFromString(message)
+                print("RECV from amazon ==========\n" + amz_msg)  # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                 amazon_t = threading.Thread(
                     target = process_aTask,
                     args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))

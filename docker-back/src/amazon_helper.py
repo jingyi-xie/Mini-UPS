@@ -33,7 +33,7 @@ def findPkgX(csr, pkgid):
 
 def processAmsg(con, msg, ASEQ, WSEQ):
     csr = con.cursor()
-
+    global SEQ_TO_WORLD
     # lists of messages to send
     world_list = {}
     amz_list = []
@@ -64,6 +64,7 @@ def processAmsg(con, msg, ASEQ, WSEQ):
         pickup.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg # add to map
+        SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # 4. reply amazon
         # orderplaced
@@ -96,6 +97,7 @@ def processAmsg(con, msg, ASEQ, WSEQ):
         deliver.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg  # add to map
+        SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # 3. reply amazon
         amazon_msg = IG1_pb2.UMsg()  # amz msg2
@@ -127,6 +129,7 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         for key in world_list:
             if key in WORLD_RECV_ACKS:
                 del world_list[key]
+                # TODO: remove used ACK ??????????????????????????????????????????
             else:
                 sender(wSocket, world_list[key])
         time.sleep(5)
