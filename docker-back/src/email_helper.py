@@ -6,7 +6,7 @@ def send_email(receiver):
     yag = yagmail.SMTP('ece568ups@gmail.com', '568upsece')
     yag.send(
         to=receiver,
-        subject="Yagmail test with attachment",
+        subject="UPS from ECE568",
         contents=body,
     )
 
