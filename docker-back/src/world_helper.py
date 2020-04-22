@@ -31,16 +31,23 @@ def initTrucks(con, truck_num):
     csr.close()
     con.commit()
 
-# TODO: send/recv operations
 def processWmsg(con, msg, amz_seq):
     csr = con.cursor()
     world_msg = world_ups_pb2.UCommands()
     amazon_msg = IG1_pb2.UMsg()
 
     for completion in msg.completions:
+        # 1. detect duplication
+        if completion.seqnum in config.WORLD_RECV_SEQS:
+            continue
+
+        # 2. get truck's current status
         status = db_getTruck(csr, completion.truckid)
+
+        # 3. update truck status
         db_updateTruck(csr, completion.truckid, completion.status)
-        #if arrive at warehouse
+
+        # 4.1 if arrive at warehouse
         if status == 'en route to a warehouse':
             print("truck " + str(completion.truckid) + " arrived at warehouse")
             #send UTruckArrived to amz
@@ -48,36 +55,72 @@ def processWmsg(con, msg, amz_seq):
             arrivedMsg.truckid = completion.truckid
             arrivedMsg.seq = amz_seq
             amz_seq += 1
-        #if finished delivering: update status + send ack to world
+
+        # 4.2 if finished delivering: update status + send ack to world
         elif status == "delivering":
             print("truck " + str(completion.truckid) + " finished delivering")
-        #ack to world
+
+        # 5. send ack to world
         world_msg.acks.append(completion.seqnum)
+
+        # 6. add seq# to list
+        config.WORLD_RECV_SEQS.append(completion.seqnum)
+
     for delivered in msg.delivered:
+        # 1. detect duplication 
+        if delivered.seqnum in config.WORLD_RECV_SEQS:
+            continue
+        
         print("package " + str(delivered.packageid) + " is delivered")
-        #change package status to delivered
+        
+        # 2. change package status to delivered
         db_updatePackage(csr, delivered.packageid, 'delivered')
-        #send UPkgDelivered to amz
+        
+        # 3. send UPkgDelivered to amz
         deliveredMsg = amazon_msg.upkgdelivered.add()
         deliveredMsg.pkgid = delivered.packageid
         deliveredMsg.seq = amz_seq
         amz_seq += 1
-        #send ack to world
+        
+        # 4. send ack to world
         world_msg.acks.append(delivered.seqnum)
+        
+        # 5. add seq# to list
+        config.WORLD_RECV_SEQS.append(delivered.seqnum)
     # for finished in msg.finished:
+    
     for ack in msg.acks:
         print("received ack from world " + str(ack))
-        config.world_recv_acks.add(ack)
+        # add ack to receive list
+        config.WORLD_RECV_ACKS.add(ack)
+    
     for status in msg.truckstatus:
+        # 1. detect duplication
+        if status.seqnum in config.WORLD_RECV_SEQS:
+            continue
         print("update truck " + str(status.truckid) + "'s status to " + str(status.status))
-        #update truck status
+        
+        # 2. update truck status
         db_updateTruck(csr, status.truckid, status.status)
-        #ack to world
+        
+        # 3. send ack to world
         world_msg.acks.append(status.seqnum)
+        
+        # 4. add seq# to list
+        config.WORLD_RECV_SEQS.append(status.seqnum)
+    
     for error in msg.error:
+        # 1. detect duplication
+        if error.seqnum in config.WORLD_RECV_SEQS:
+            continue
         print("Received error from world: " + error.err)
-        #ack to world
+        
+        # 2. send ack to world
         world_msg.acks.append(error.seqnum)
+        
+        # 3. add seq# to list
+        config.WORLD_RECV_SEQS.append(error.seqnum)
+    
     csr.close()
     con.commit()
     return amazon_msg, world_msg
