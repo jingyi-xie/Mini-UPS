@@ -2,7 +2,7 @@ import socket
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _EncodeVarint
 
-WORLD_HOST = '127.0.0.1' 
+WORLD_HOST = 'vcm-14348.vm.duke.edu'
 WORLD_PORT = 12345
 AMZ_PORT = 33333
 
