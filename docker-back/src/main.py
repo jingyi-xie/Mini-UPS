@@ -5,7 +5,7 @@ from proto import IG1_pb2, world_ups_pb2, world_amazon_pb2
 from socket_helper import createAmzSocket, receiver
 from world_helper import connectWorld, initTrucks, process_wTask
 from amazon_helper import sendWorldID, process_aTask
-from db_update import connectDB, clearDB
+from db_update import connectDB, clearDB, disconnectDB
 
 TRUCK_NUM = 2000
 WORLD_ID = 0
@@ -67,6 +67,8 @@ def main():
     #Close the sockets
     world_socket.close()
     amz_socket.close()
+    #Disconnect database
+    disconnectDB(con)
     
 if __name__ == "__main__":
     main()
