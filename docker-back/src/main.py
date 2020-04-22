@@ -33,41 +33,48 @@ def main():
     #add trucks to database
     initTrucks(con, TRUCK_NUM)
 
-    #Select and read the messages from world/amazon
-    while True:
-        socket_list = [world_socket, amz_socket]
-        read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [])
-        for rs in read_sockets:
-            if not read_sockets:
-                print("Timed out, retry...")
-                continue
-            if rs == world_socket:
-                world_response = world_ups_pb2.UResponses()
-                message = receiver(world_socket)
-                world_response.ParseFromString(message)
-                print("RECV from world ==========\n" + world_response) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                if world_response.finished:
-                    print("WORLD_RECV_SEQS ==========\n" + WORLD_RECV_SEQS)
-                    print("SEQ_TO_WORLD ==========\n" + SEQ_TO_WORLD) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                world_t = threading.Thread(
-                    target = process_wTask,
-                    args = (con, world_response, world_socket, amz_socket, AMZ_SEQ))
-                AMZ_SEQ += len(world_response.completions) + len(world_response.delivered)
-                world_t.start()
-            elif rs == amz_socket:
-                amz_msg = IG1_pb2.AMsg()
-                message = receiver(amz_socket)
-                amz_msg.ParseFromString(message)
-                print("RECV from amazon ==========\n" + amz_msg)  # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                amazon_t = threading.Thread(
-                    target = process_aTask,
-                    args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))
-                AMZ_SEQ += len(amz_msg.asendtruck)
-                WORLD_SEQ += len(amz_msg.asendtruck) + len(amz_msg.afinishloading)
-                amazon_t.start()
-  
-        for es in error_sockets:
-            print('Error from ', es.getpeername())
+    try:
+        #Select and read the messages from world/amazon
+        while True:
+            socket_list = [world_socket, amz_socket]
+            read_sockets, write_sockets, error_sockets = select.select(socket_list, [], [])
+            for rs in read_sockets:
+                if not read_sockets:
+                    print("Timed out, retry...")
+                    continue
+                if rs == world_socket:
+                    world_response = world_ups_pb2.UResponses()
+                    message = receiver(world_socket)
+                    world_response.ParseFromString(message)
+                    print("RECV from world ==========\n" + world_response) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    # TODO: exit when recv finished from world
+                    # if world_response.finished:
+                    #     break 
+                    world_t = threading.Thread(
+                        target = process_wTask,
+                        args = (con, world_response, world_socket, amz_socket, AMZ_SEQ))
+                    AMZ_SEQ += len(world_response.completions) + len(world_response.delivered)
+                    world_t.start()
+                elif rs == amz_socket:
+                    amz_msg = IG1_pb2.AMsg()
+                    message = receiver(amz_socket)
+                    amz_msg.ParseFromString(message)
+                    print("RECV from amazon ==========\n" + amz_msg)  # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    amazon_t = threading.Thread(
+                        target = process_aTask,
+                        args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))
+                    AMZ_SEQ += len(amz_msg.asendtruck)
+                    WORLD_SEQ += len(amz_msg.asendtruck) + len(amz_msg.afinishloading)
+                    amazon_t.start()
+    
+            for es in error_sockets:
+                print('Error from ', es.getpeername())
+    
+    except KeyboardInterrupt:
+        # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        print("WORLD_RECV_SEQS ==========\n" + WORLD_RECV_SEQS)
+        print("SEQ_TO_WORLD ==========\n" + SEQ_TO_WORLD)
+        # sys.exit()
 
     #Close the sockets
     world_socket.close()
