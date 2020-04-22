@@ -40,7 +40,7 @@ def processAmsg(con, msg, ASEQ, WSEQ):
     for item in msg.asendtruck:
         # 1. update truck
         truck_id = findIdleTruck(csr)
-        db_updateTruck(csr, truck_id, 'loading')
+        db_updateTruck(csr, truck_id, 'en route to a warehouse')
         
         # 2. insert pkg
         package_id = item.pkgid
@@ -79,7 +79,7 @@ def processAmsg(con, msg, ASEQ, WSEQ):
 
     for item in msg.afinishloading:
         # 1. update truck and pkg
-        db_updateTruck(csr, item.truckid, 'shipping')
+        db_updateTruck(csr, item.truckid, 'delivering')
         db_updatePackage(csr, item.pkgid, 'shipping')
 
         # 2. world go deliver
