@@ -1,5 +1,6 @@
 import socket
 import config
+from email_helper import mailMan
 from proto import IG1_pb2, world_ups_pb2
 from socket_helper import createWorldSocket, sender, receiver
 from command_helper import createInitialConnect
@@ -75,6 +76,7 @@ def processWmsg(con, msg, amz_seq):
         
         # 2. change package status to delivered
         db_updatePackage(csr, delivered.packageid, 'delivered')
+        mailMan(csr, delivered.packageid) # send email
         
         # 3. send UPkgDelivered to amz
         deliveredMsg = amazon_msg.upkgdelivered.add()
