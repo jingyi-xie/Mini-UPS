@@ -60,8 +60,13 @@
             <hr>
 
             {% if user.is_authenticated %}
-                You already signed in. 
-                <a href="{% url 'upsapp:profile'%}" class="btn btn-outline-success btn-sm">Manage all my packages!</a>
+                You already signed in.
+                <br><br>       
+                <div class="btn-group-vertical">
+                    <a href="{% url 'upsapp:update'%}" class="btn btn-outline-success btn-sm">Update Profile</a>
+                    <a href="{% url 'upsapp:list'%}" class="btn btn-outline-success btn-sm">Manage all my packages</a>
+                </div>
+
             {% else %}
                 Already Have an Account? <a href={% url 'upsapp:login'%}> Log In </a>
             {% endif %}

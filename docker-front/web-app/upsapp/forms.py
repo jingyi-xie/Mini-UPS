@@ -9,3 +9,7 @@ class UserSignupForm(UserCreationForm):
         model = ups_user
         fields = ['username', 'email', 'password1', 'password2']
 
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = ups_user
+        fields = ['email']

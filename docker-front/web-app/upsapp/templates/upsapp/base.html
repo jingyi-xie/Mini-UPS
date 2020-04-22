@@ -47,19 +47,18 @@
             {% endif %}
           </div>
         </div>
+        <a class="feedback-btn btn btn-secondary float-right" href="{% url 'upsapp:feedback'%}"> > Feedback </a>
       </nav>
     </header>
     <br><br>
     <main role="main" class="container pt-3">
-        <div class="col-sm-6 ml-5">
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        </div>
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
       {% block content %}{% endblock %}
  
       </div>

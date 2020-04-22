@@ -1,0 +1,12 @@
+{% extends 'upsapp/base.html' %}
+
+{% block title %}Feedback{% endblock %}
+{% block content %}
+  <h4>Feedback</h4>
+  <br>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-outline-primary btn-sm" type="submit">Submit</button>
+  </form>
+{% endblock %}
