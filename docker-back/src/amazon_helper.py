@@ -4,6 +4,7 @@ from command_helper import *
 from world_helper import *
 from db_update import *
 import time
+import config
 
 def sendWorldID(amz_socket, worldID, seqNum):
     #Create the Umsg that contains worldid
