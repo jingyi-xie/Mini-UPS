@@ -30,8 +30,10 @@ def main():
     #clear database
     con = connectDB()
     clearDB(con)
+    print('Truncated database!')
     #add trucks to database
     initTrucks(con, TRUCK_NUM)
+    print('Successfully created trucks!')
 
     try:
         #Select and read the messages from world/amazon
