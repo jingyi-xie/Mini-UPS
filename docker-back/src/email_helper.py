@@ -1,8 +1,8 @@
 import yagmail
 from db_update import connectDB, disconnectDB
 
-def send_email(receiver):
-    body = "Your pakage is delivered"
+def send_email(receiver, pkgid):
+    body = "Your pakage is delivered, id is " + str(pkgid)
     yag = yagmail.SMTP('ece568ups@gmail.com', '568upsece')
     yag.send(
         to=receiver,
@@ -14,17 +14,23 @@ def db_getEmail(csr, name):
     name = '\'' + name + '\''
     sql = ('SELECT email from upsapp_ups_user WHERE username = (%s)')
     csr.execute(sql % name)
-    return csr.fetchone()[0]
+    if csr.fetchone():
+        return csr.fetchone()[0]
+    print("db_getEmail failed, name = " + name)
+    return None
 
 def db_getOwner(csr, pkgid):
     sql = ('SELECT owner from upsapp_ups_package WHERE package_id = (%d)')
     csr.execute(sql % pkgid)
-    return csr.fetchone()[0]
+    if csr.fetchone():
+        return csr.fetchone()[0]
+    print("db_getOwner failed, pigid = " + str(pkgid))
+    return None
 
 def mailMan(csr, pkgid):
     owner = db_getOwner(csr, pkgid)
     receiver = db_getEmail(csr, owner)
-    send_email(receiver)
+    send_email(receiver, pkgid)
     print("mail man sent email") # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # # test:

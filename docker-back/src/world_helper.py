@@ -76,7 +76,10 @@ def processWmsg(con, msg, amz_seq):
         
         # 2. change package status to delivered
         db_updatePackage(csr, delivered.packageid, 'delivered')
-        mailMan(csr, delivered.packageid) # send email
+        try:
+            mailMan(csr, delivered.packageid) # send email
+        except Exception as e:
+            print("Email not sent because: " + str(e))
         
         # 3. send UPkgDelivered to amz
         deliveredMsg = amazon_msg.upkgdelivered.add()

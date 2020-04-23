@@ -2,12 +2,12 @@ import select
 import threading
 import config
 from proto import IG1_pb2, world_ups_pb2, world_amazon_pb2
-from socket_helper import createAmzSocket, receiver
+from socket_helper import createAmzSocket, sender, receiver
 from world_helper import connectWorld, initTrucks, process_wTask
 from amazon_helper import sendWorldID, process_aTask
 from db_update import connectDB, clearDB, disconnectDB
 
-TRUCK_NUM = 2000
+TRUCK_NUM = 200
 WORLD_ID = 0
 WORLD_SEQ = 1
 AMZ_SEQ = 1
@@ -18,6 +18,11 @@ def main():
     #Connect the world
     world_socket, WORLD_ID = connectWorld(TRUCK_NUM)
     print('Successfully connected to world with id ' + str(WORLD_ID))
+
+    speedMsg = world_ups_pb2.UCommands()
+    speedMsg.simspeed = 300000
+    sender(world_socket, speedMsg)
+
     #Accept connection from the amazon
     amz_socket = createAmzSocket()
     print('Created amazon socket')
@@ -35,6 +40,8 @@ def main():
     initTrucks(con, TRUCK_NUM)
     print('Successfully created trucks!')
 
+    
+
     try:
         #Select and read the messages from world/amazon
         while True:
@@ -48,7 +55,7 @@ def main():
                     world_response = world_ups_pb2.UResponses()
                     message = receiver(world_socket)
                     world_response.ParseFromString(message)
-                    print("RECV from world ==========\n" + world_response) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    print("RECV from world ==========\n" + str(world_response)) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     # TODO: exit when recv finished from world
                     # if world_response.finished:
                     #     break 
@@ -61,7 +68,7 @@ def main():
                     amz_msg = IG1_pb2.AMsg()
                     message = receiver(amz_socket)
                     amz_msg.ParseFromString(message)
-                    print("RECV from amazon ==========\n" + amz_msg)  # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                    print("RECV from amazon ==========\n" + str(amz_msg))  # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                     amazon_t = threading.Thread(
                         target = process_aTask,
                         args = (con, amz_msg, world_socket, amz_socket, AMZ_SEQ, WORLD_SEQ))
@@ -74,8 +81,8 @@ def main():
     
     except KeyboardInterrupt:
         # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        print("WORLD_RECV_SEQS ==========\n" + WORLD_RECV_SEQS)
-        print("SEQ_TO_WORLD ==========\n" + SEQ_TO_WORLD)
+        print("WORLD_RECV_SEQS ==========\n" + config.WORLD_RECV_SEQS)
+        print("SEQ_TO_WORLD ==========\n" + config.SEQ_TO_WORLD)
         # sys.exit()
 
     #Close the sockets

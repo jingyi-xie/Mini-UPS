@@ -31,9 +31,9 @@ def findPkgX(csr, pkgid):
     return csr.fetchone()
 
 
-def processAmsg(con, msg, ASEQ, WSEQ):
+def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
     csr = con.cursor()
-    global SEQ_TO_WORLD
+    #global SEQ_TO_WORLD
     # lists of messages to send
     world_list = {}
     amz_list = []
@@ -64,7 +64,7 @@ def processAmsg(con, msg, ASEQ, WSEQ):
         pickup.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg # add to map
-        SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        config.SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # 4. reply amazon
         # orderplaced
@@ -75,7 +75,10 @@ def processAmsg(con, msg, ASEQ, WSEQ):
         ASEQ += 1
         placed.seq = ASEQ
         # ack
-        amazon_msg.ack.append(item.seq)
+        # amazon_msg.ack.append(item.seq)
+        ack1 = IG1_pb2.UMsg()
+        ack1.ack.append(item.seq)
+        sender(aSocket, ack1)
         amz_list.append(amazon_msg)
         
 
@@ -97,12 +100,15 @@ def processAmsg(con, msg, ASEQ, WSEQ):
         deliver.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg  # add to map
-        SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        config.SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         # 3. reply amazon
-        amazon_msg = IG1_pb2.UMsg()  # amz msg2
-        amazon_msg.ack.append(item.seq)
-        amz_list.append(amazon_msg)
+        # amazon_msg = IG1_pb2.UMsg()  # amz msg2
+        # amazon_msg.ack.append(item.seq)
+        ack2 = IG1_pb2.UMsg()
+        ack2.ack.append(item.seq)
+        sender(aSocket, ack2)
+        # amz_list.append(amazon_msg)
 
     csr.close()
     con.commit()
@@ -117,21 +123,27 @@ def getProductName(products):
 
 
 def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
-    global WORLD_RECV_ACKS
-    amz_list, world_list = processAmsg(con, msg, ASEQ, WSEQ)
+    #global WORLD_RECV_ACKS
+    amz_list, world_list = processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ)
 
     # send message to amazon
     for item in amz_list:
-        sender(wSocket, item)
+        sender(aSocket, item)
     
     # repeatedly messages to world
     while len(world_list):
-        for key in world_list:
-            if key in WORLD_RECV_ACKS:
+        keys = list(world_list)
+        for key in keys:
+            if key in config.WORLD_RECV_ACKS:
                 del world_list[key]
-                # TODO: remove used ACK ??????????????????????????????????????????
             else:
                 sender(wSocket, world_list[key])
+        #for key in world_list:
+        #    if key in config.WORLD_RECV_ACKS:
+        #        del world_list[key]
+        #        # TODO: remove used ACK ??????????????????????????????????????????
+        #    else:
+        #        sender(wSocket, world_list[key])
         time.sleep(5)
     
 
