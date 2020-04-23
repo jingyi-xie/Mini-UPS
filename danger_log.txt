@@ -1,0 +1,10 @@
+04/15: connection lost after initializing trucks
+04/16: fixed issue above by remove unnecessary disconnect command
+04/17: database update error: column does not exist
+04/17: fixed issue above by adding escaped bachslash and improve formatting of queries
+04/19: does not handle resending message
+04/19: fixed issue above by saving messages and adding reseding function
+04/20: tesing with Amazon and successfully sent world id
+04/22: error processing messages that need resending
+04/22: corrected socket, and used alternative data structure in iteration
+04/22: email function failed

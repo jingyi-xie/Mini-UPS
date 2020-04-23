@@ -1,0 +1,4 @@
+Our UPS includes three differentiation features:
+    1. Email Notification: when the product is delivered, the user will receive an email that containes the product id.
+    2. Rating: registered users can give a rating to our UPS service on the website
+    3. Change email: registered users can change their email address
