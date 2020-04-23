@@ -79,7 +79,7 @@ def processWmsg(con, msg, amz_seq):
         try:
             mailMan(csr, delivered.packageid) # send email
         except Exception as e:
-            print("Email not sent because: " + str(e))
+            print("Email not sent because: " + str(e) + " pkgid = " + str(delivered.packageid))
         
         # 3. send UPkgDelivered to amz
         deliveredMsg = amazon_msg.upkgdelivered.add()
