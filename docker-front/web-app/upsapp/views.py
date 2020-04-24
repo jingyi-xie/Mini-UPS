@@ -16,6 +16,8 @@ def home_view(request):
         qs = qs.filter(
                 Q(package_id = pkg_id)
             ).distinct()
+    else:
+        qs = None
     context = {
         'queryset' : qs
     }

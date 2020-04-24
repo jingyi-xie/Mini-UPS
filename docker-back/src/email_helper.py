@@ -31,15 +31,15 @@ def mailMan(csr, pkgid):
     owner = db_getOwner(csr, pkgid)
     receiver = db_getEmail(csr, owner)
     send_email(receiver, pkgid)
-    print("mail man sent email") # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    print("mail man sent email")
 
-# test:
-con= connectDB()
-csr = con.cursor()
+# # test:
+# con= connectDB()
+# csr = con.cursor()
 
-print('getowner: ' + str(db_getOwner(csr, 1)))
-print('getemail: ' + str(db_getEmail(csr, 'upsid')))
+# print('getowner: ' + str(db_getOwner(csr, 1)))
+# print('getemail: ' + str(db_getEmail(csr, 'upsid')))
 
-csr.close()
-# disconnect
-disconnectDB(con)
+# csr.close()
+# # disconnect
+# disconnectDB(con)

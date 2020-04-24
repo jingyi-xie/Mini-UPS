@@ -67,7 +67,7 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         pickup.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg # add to map
-        config.SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        config.SEQ_TO_WORLD.add(WSEQ)
 
         # 4. reply amazon
         # orderplaced
@@ -109,7 +109,7 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         deliver.seqnum = WSEQ
         # world_list.append(world_msg)
         world_list[WSEQ] = world_msg  # add to map
-        config.SEQ_TO_WORLD.add(WSEQ) # testing ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        config.SEQ_TO_WORLD.add(WSEQ) 
 
         # 3. reply amazon
         # amazon_msg = IG1_pb2.UMsg()  # amz msg2
@@ -129,7 +129,7 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
 def getProductName(products):
     names = ''
     for item in products:
-        names += item.description + ', '
+        names += item.description + ' '
     return names
 
 
