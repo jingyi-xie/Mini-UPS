@@ -132,9 +132,16 @@ def processWmsg(con, msg, amz_seq):
 
 def process_wTask(con, world_response, world_socket, amz_socket, AMZ_SEQ):
     amazon_msg, world_msg = processWmsg(con, world_response, AMZ_SEQ)
+
+    world_msg.disconnect = False
+
     # send message to world and amazon
     sender(world_socket, world_msg)
-    sender(amz_socket, amazon_msg)
+    print("send to world =================\n" + str(world_msg))
+    if str(amazon_msg) != '':
+        sender(amz_socket, amazon_msg)
+    print('send to AMZ ==============\n' + str(amazon_msg))
+
 
 # # TEST ========== processWmsg
 # msg = world_ups_pb2.UResponses()

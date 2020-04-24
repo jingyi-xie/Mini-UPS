@@ -20,7 +20,7 @@ def main():
     print('Successfully connected to world with id ' + str(WORLD_ID))
 
     speedMsg = world_ups_pb2.UCommands()
-    speedMsg.simspeed = 300000
+    speedMsg.simspeed = 100000
     sender(world_socket, speedMsg)
 
     #Accept connection from the amazon

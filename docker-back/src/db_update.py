@@ -16,8 +16,6 @@ def clearDB(con):
     csr = con.cursor()
     sql = "TRUNCATE upsapp_ups_package, upsapp_ups_truck"
     csr.execute(sql)
-    # sql = "TRUNCATE upsapp_ups_user"
-    # csr.execute(sql)
     csr.close()
     con.commit()
 

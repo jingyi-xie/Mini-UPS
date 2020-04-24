@@ -57,6 +57,9 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         
         # 3. world go pick up
         world_msg = world_ups_pb2.UCommands() # world msg 1
+
+        world_msg.disconnect = False
+
         pickup = world_msg.pickups.add()
         pickup.truckid = truck_id
         pickup.whid = item.whinfo.whid
@@ -79,6 +82,8 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         ack1 = IG1_pb2.UMsg()
         ack1.ack.append(item.seq)
         sender(aSocket, ack1)
+        print('send to AMZ ==============\n' + str(ack1))
+
         amz_list.append(amazon_msg)
         
 
@@ -89,6 +94,10 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
 
         # 2. world go deliver
         world_msg = world_ups_pb2.UCommands()  # world msg 2
+
+        world_msg.disconnect = False
+
+
         deliver = world_msg.deliveries.add()
         deliver.truckid = item.truckid
         location = deliver.packages.add()
@@ -108,6 +117,8 @@ def processAmsg(con, msg, wSocket, aSocket, ASEQ, WSEQ):
         ack2 = IG1_pb2.UMsg()
         ack2.ack.append(item.seq)
         sender(aSocket, ack2)
+        print('send to AMZ ==============\n' + str(ack2))
+
         # amz_list.append(amazon_msg)
 
     csr.close()
@@ -129,6 +140,7 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
     # send message to amazon
     for item in amz_list:
         sender(aSocket, item)
+        print('send to AMZ ==============\n' + str(item))
     
     # repeatedly messages to world
     while len(world_list):
@@ -138,12 +150,7 @@ def process_aTask(con, msg, wSocket, aSocket, ASEQ, WSEQ):
                 del world_list[key]
             else:
                 sender(wSocket, world_list[key])
-        #for key in world_list:
-        #    if key in config.WORLD_RECV_ACKS:
-        #        del world_list[key]
-        #        # TODO: remove used ACK ??????????????????????????????????????????
-        #    else:
-        #        sender(wSocket, world_list[key])
+                print("send to world =================\n" + str(world_list[key]))
         time.sleep(5)
     
 
