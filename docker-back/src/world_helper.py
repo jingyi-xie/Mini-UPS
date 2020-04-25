@@ -54,8 +54,8 @@ def processWmsg(con, msg, amz_seq):
             #send UTruckArrived to amz
             arrivedMsg = amazon_msg.utruckarrived.add()
             arrivedMsg.truckid = completion.truckid
-            arrivedMsg.seq = amz_seq
             amz_seq += 1
+            arrivedMsg.seq = amz_seq
 
         # 4.2 if finished delivering: update status + send ack to world
         elif status == "delivering":
@@ -84,8 +84,8 @@ def processWmsg(con, msg, amz_seq):
         # 3. send UPkgDelivered to amz
         deliveredMsg = amazon_msg.upkgdelivered.add()
         deliveredMsg.pkgid = delivered.packageid
-        deliveredMsg.seq = amz_seq
         amz_seq += 1
+        deliveredMsg.seq = amz_seq
         
         # 4. send ack to world
         world_msg.acks.append(delivered.seqnum)
